@@ -11,7 +11,6 @@ def preprocess(file_path,
                 lower_case = True,
                 remove_stopword = True,
                 steam = False,
-
             ):
     
     df = pd.read_csv(file_path)
@@ -29,7 +28,11 @@ def preprocess(file_path,
 
     X = X.apply(lambda x: [word for word in x if word not in stopwords.words('english')]) if remove_stopword else X
 
-    X = X.apply(lambda x: [])
+    ps = nltk.PorterStemmer()
+    X = X.apply(lambda x: [ps.stem(word) for word in X]) if steam else X
+
+    return X.values, y.values
+
 
 
 
