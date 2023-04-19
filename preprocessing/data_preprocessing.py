@@ -9,6 +9,7 @@ import pickle
 tqdm.pandas()
 
 # nltk.download('stopwords')
+# nltk.download('punkt')
 
 def preprocess(file_path,
                 fillna = 'ukw',
@@ -55,5 +56,5 @@ if __name__ == '__main__':
     with open('X_train.data', 'wb') as f_train:
         pickle.dump(X, f_train)
 
-    with open('y_train.data', 'rb') as fy_train:
+    with open('y_train.data', 'wb') as fy_train:
         pickle.dump(y, fy_train)
