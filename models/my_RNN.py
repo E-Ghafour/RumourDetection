@@ -4,11 +4,15 @@ import torch.nn as nn
 from torchtext.vocab import GloVe, FastText
 import torch.optim as optim
 
-class RNN(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, num_layers, bidirectional, inner_dropout, dropout):
-        super(RNN, self).__init__()
-        # vocab = GloVe(name='6B', dim=100)
-        vocab = FastText(language='en')
+class myRNN(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size, num_layers, bidirectional, inner_dropout, dropout, vocab = None, word2vec = 'fasttext'):
+        super(myRNN, self).__init__()
+        if(word2vec == 'fasttext'):
+            vocab = FastText(language='en') if vocab == None else vocab
+        else:
+            vocab = GloVe(name = '6B', dim = 100)
+
+        vocab = FastText(language='en') if vocab == None else vocab
         self.hidden_size = hidden_size
         self.relu = nn.ReLU()
         self.embedding = nn.Embedding.from_pretrained(vocab.vectors)
