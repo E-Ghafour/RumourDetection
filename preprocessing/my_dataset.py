@@ -4,16 +4,16 @@ from torchtext.vocab import GloVe, FastText
 import pickle
 
 class RumorDataset(Dataset):
-    def __init__(self, tokenize_data_path, labels_path, max_len, have_label = True, word2vec_type = 'fasttext'):
-        self.max_len = max_len
+    def __init__(self, tokenize_data_path, labels_path, pad_len, have_label = True, embedding_type = 'fasttext'):
+        self.max_len = pad_len
         self.have_label = have_label
-        self.word2vec_type = word2vec_type
+        self.word2vec_type = embedding_type
         with open(tokenize_data_path, 'rb') as ff:
             self.tokenize_data = pickle.load(ff)
         if(have_label):
             with open(labels_path, 'rb') as ff:
                 self.labels = pickle.load(ff)
-        if(word2vec_type == 'fasttext'):
+        if(embedding_type == 'fasttext'):
             self.vocab = FastText(language = 'en')
         else:
             self.vocab = GloVe(name = '6B', dim = 100)
