@@ -15,7 +15,7 @@ def preprocess(file_path,
                 fillna = 'ukw',
                 remove_punc = True,
                 lower_case = True,
-                remove_stopword = True,
+                remove_stopwords = True,
                 steam = False,
             ):
     
@@ -36,7 +36,7 @@ def preprocess(file_path,
     X = X.progress_apply(lambda x: nltk.word_tokenize(x)) 
 
     print('remove stopwords...')
-    X = X.progress_apply(lambda x: [word for word in x if word not in stopwords.words('english')]) if remove_stopword else X
+    X = X.progress_apply(lambda x: [word for word in x if word not in stopwords.words('english')]) if remove_stopwords else X
 
     print('steaming...')
     ps = nltk.PorterStemmer()
@@ -44,6 +44,9 @@ def preprocess(file_path,
 
     return X.values, y.values
 
+def save_data(data, path):
+    with open(path, 'wb') as ff:
+        pickle.dump(data, ff)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -53,8 +56,6 @@ if __name__ == '__main__':
 
     X, y = preprocess(file_name)
 
-    with open('X_train.data', 'wb') as f_train:
-        pickle.dump(X, f_train)
+    save_data(X)
 
-    with open('y_train.data', 'wb') as fy_train:
-        pickle.dump(y, fy_train)
+    save_data(y)
