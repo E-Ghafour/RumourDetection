@@ -6,7 +6,7 @@ from sklearn.metrics import (classification_report as C_R,
                             confusion_matrix as C_M)
 import seaborn as sns
 
-def report_evaluation(y_pred, y_test,
+def report_model_evaluation(y_pred, y_test,
              classification_report = True,
              accuracy_score = True,
              precision_score = True,
