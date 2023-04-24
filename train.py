@@ -1,11 +1,15 @@
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
+import numpy as np
 from preprocessing import data_preprocessing, my_dataset
 from models import my_RNN
 from evaluation import model_evaluation, epoch_evaluation
 from configparser import ConfigParser
 
+SEED = 119
+torch.random.seed = SEED
+np.random.seed(SEED)
 
 config = ConfigParser()
 config.read('config.ini')
@@ -46,6 +50,7 @@ epochs = config.getint('MODEL_INFO', 'epochs')
 pad_len = config.getint('MODEL_INFO', 'pad_len')
 trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
+validation_size = config.get('MODEL_INFO', 'validation_size')
 
 
 
@@ -59,35 +64,22 @@ dataset = my_dataset.RumorDataset(tokenize_data_path=x_train_path,
                                   embedding_type=embedding_type,
                                   )
 
-train_dataLoader = DataLoader(dataset=dataset,
+data_size = len(dataset)
+validation_size = int(validation_size * data_size)
+train_size = data_size - validation_size
+
+train_dataset, validation_dataset = random_split(dataset=dataset,
+                                                 lengths=[train_size, validation_size]
+                                                 )
+
+train_dataLoader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
-                              shuffle=True,
-                              )
-
-# validation_dataLoader = DataLoader(dataset=)
-
-
+                              shuffle=True)
+validation_dataLoader = DataLoader(dataset=validation_dataset,
+                                   batch_size = batch_size,
+                                   shuffle = True)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
 
     
