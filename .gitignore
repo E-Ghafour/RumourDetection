@@ -2,3 +2,6 @@ X_train.data
 y_train.data
 train.ipynb
 fake_news/
+preprocessing/__pycache__
+evaluation/__pycache__
+models/__pycache__
