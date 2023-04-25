@@ -1,4 +1,5 @@
 import torch
+import itertools
 
 def count_parameters(model):
     f_num = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -29,13 +30,15 @@ def train(dataloader, model, loss_fn, optimizer, device):
     print(f'train accuracy: {(100*num_correct/len(dataloader.dataset)):>0.01f}')
 
 def predict_validation_label(model, dataloader, device):
-    model.evaluate()
+    model.eval()
     Y = []
     preds = []
     with torch.no_grad():
         for x, y in dataloader:
-            Y += y
+            Y += y.tolist()
             pred = model(x.to(device))
-            preds += torch.round(pred)
+            preds += torch.round(pred).tolist()
+    preds = list(itertools.chain.from_iterable(preds))
+    y = list(itertools.chain.from_iterable(y))
     return preds, Y
 

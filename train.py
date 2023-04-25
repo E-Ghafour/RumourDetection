@@ -149,5 +149,5 @@ if(report_evaluation):
                                                           device=device
                                                           )
     model_evaluation.report_model_evaluation(y_pred=y_pred,
-                                             y_test=y_pred
+                                             y_test=y_validation
                                              )

@@ -20,17 +20,18 @@ def report_model_evaluation(y_pred,
         print(C_R(y_pred, y))
     
     if(accuracy_score):
-        print('Accuracy\t\t\t: %.4f'%A_S(y_pred, y, average='weighted'))
+        print('Accuracy\t\t\t: %.4f'%A_S(y_pred, y))
 
     if(precision_score):
-        print('Precision\t\t\t: %.4f'%P_S(y_pred, y, average='weighted'))
+        print('Precision\t\t\t: %.4f'%P_S(y_pred, y))
 
     if(recall_score):
-        print('Recall\t\t\t: %.4f'%R_S(y_pred, y, average='weighted'))
+        print('Recall\t\t\t\t: %.4f'%R_S(y_pred, y))
 
     if(f1_score):
-        print('F1_Score\t\t\t: %.4f'%F1_S(y_pred, y, average='weighted'))
+        print('F1_Score\t\t\t: %.4f'%F1_S(y_pred, y))
 
+    print()
     if(confusion_matrix):
         confusion_matrix_report = C_M(y_pred, y)
         print('confusion matrix: ')
