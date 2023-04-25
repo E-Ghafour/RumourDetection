@@ -58,7 +58,6 @@ report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
 device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
 
-
 x_train_path = config.get('DATA', 'x_train_path')
 y_train_path = config.get('DATA', 'y_train_path')
 
@@ -124,7 +123,7 @@ optimizer = optim.Adam(model.parameters(), lr = learning_rate)
 loss_fn = nn.BCELoss().to(device)
 gc.collect()
 
-if(trainable_embedding):
+if(not trainable_embedding):
     model.embedding.weight.requires_grad = False
 utils.count_parameters(model = model)
 
