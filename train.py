@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 import numpy as np
 from preprocessing import data_preprocessing, my_dataset
-from models import my_RNN
+from models import my_RNN, my_GRU, my_LSTM
 from evaluation import model_evaluation, epoch_evaluation
 from configparser import ConfigParser
 
@@ -51,6 +51,7 @@ pad_len = config.getint('MODEL_INFO', 'pad_len')
 trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.get('MODEL_INFO', 'validation_size')
+device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
 
 
@@ -78,6 +79,44 @@ train_dataLoader = DataLoader(dataset=train_dataset,
 validation_dataLoader = DataLoader(dataset=validation_dataset,
                                    batch_size = batch_size,
                                    shuffle = True)
+
+accepted_models = ['RNN', 'GRU', 'LSTM']
+accepted_embeddings = ['fasttext', 'glove']
+assert embedding_type in accepted_embeddings, f'your embedding model should be one of thease: {accepted_embeddings}'
+assert model_type in accepted_models, f'your model_type should be one of thease: {accepted_models}'
+
+if(model_type == 'RNN'):
+    model = my_RNN(input_size = input_size,
+                   hidden_size = hidden_size,
+                   output_size = output_size,
+                   n_layer = n_layer,
+                   bidirectional = bidirectional,
+                   inner_dropout = inner_dropout,
+                   dropout = dropout,
+                   vocab = dataset.vocab,
+                ).to(device)
+elif(model_type == 'GRU'):
+    model = my_GRU(input_size = input_size,
+                   hidden_size = hidden_size,
+                   output_size = output_size,
+                   n_layer = n_layer,
+                   bidirectional = bidirectional,
+                   inner_dropout = inner_dropout,
+                   dropout = dropout,
+                   vocab = dataset.vocab
+                ).to(device) 
+elif(model_type == 'LSTM'):
+    model = my_LSTM(input_size = input_size,
+                   hidden_size = hidden_size,
+                   output_size = output_size,
+                   n_layer = n_layer,
+                   bidirectional = bidirectional,
+                   inner_dropout = inner_dropout,
+                   dropout = dropout,
+                   vocab = dataset.vocab
+                ).to(device) 
+
+
 
 
 
