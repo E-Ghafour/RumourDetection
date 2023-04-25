@@ -13,7 +13,7 @@ def report_model_evaluation(y_pred,
              precision_score = True,
              recall_score = True,
              f1_score = True,
-             confusion_matrix = True
+             confusion_matrix = False
             ):
     
     if(classification_report):

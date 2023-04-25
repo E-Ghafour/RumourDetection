@@ -15,7 +15,7 @@ torch.random.seed = SEED
 np.random.seed(SEED)
 
 config = ConfigParser()
-config.read('config.ini')
+config.read('/content/RomourDetection/config.ini')
 
 skip_preprocessing = config.getboolean('GENERAL', 'skip_preprocessing')
 
@@ -149,5 +149,5 @@ if(report_evaluation):
                                                           device=device
                                                           )
     model_evaluation.report_model_evaluation(y_pred=y_pred,
-                                             y_test=y_validation
+                                             y=y_validation
                                              )
