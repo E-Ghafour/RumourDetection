@@ -53,7 +53,7 @@ epochs = config.getint('MODEL_INFO', 'epochs')
 pad_len = config.getint('MODEL_INFO', 'pad_len')
 trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
-validation_size = config.get('MODEL_INFO', 'validation_size')
+validation_size = config.getfloat('MODEL_INFO', 'validation_size')
 report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
 device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
@@ -89,30 +89,30 @@ assert embedding_type in accepted_embeddings, f'your embedding model should be o
 assert model_type in accepted_models, f'your model_type should be one of thease: {accepted_models}'
 
 if(model_type == 'RNN'):
-    model = my_RNN(input_size = input_size,
+    model = my_RNN.myRNN(input_size = input_size,
                    hidden_size = hidden_size,
                    output_size = output_size,
-                   n_layer = n_layer,
+                   num_layers = n_layer,
                    bidirectional = bidirectional,
                    inner_dropout = inner_dropout,
                    dropout = dropout,
                    vocab = dataset.vocab,
                 ).to(device)
 elif(model_type == 'GRU'):
-    model = my_GRU(input_size = input_size,
+    model = my_GRU.myGRU(input_size = input_size,
                    hidden_size = hidden_size,
                    output_size = output_size,
-                   n_layer = n_layer,
+                   num_layers = n_layer,
                    bidirectional = bidirectional,
                    inner_dropout = inner_dropout,
                    dropout = dropout,
                    vocab = dataset.vocab
                 ).to(device) 
 elif(model_type == 'LSTM'):
-    model = my_LSTM(input_size = input_size,
+    model = my_LSTM.myLSTM(input_size = input_size,
                    hidden_size = hidden_size,
                    output_size = output_size,
-                   n_layer = n_layer,
+                   num_layers = n_layer,
                    bidirectional = bidirectional,
                    inner_dropout = inner_dropout,
                    dropout = dropout,
@@ -127,11 +127,10 @@ if(not trainable_embedding):
     model.embedding.weight.requires_grad = False
 utils.count_parameters(model = model)
 
-best_model_acc = 0
-
+max_acc = 0
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    utils.train(train_dataLoader, model, loss_fn, optimizer)
+    utils.train(train_dataLoader, model, loss_fn, optimizer, device)
     acc = epoch_evaluation.evaluate(dataloader=validation_dataLoader,
                                     model=model,
                                     loss_fn=loss_fn,
