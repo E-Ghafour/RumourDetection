@@ -1,11 +1,14 @@
 import torch
 import torch.nn as nn
+from torch import optim
 from torch.utils.data import DataLoader, random_split
 import numpy as np
 from preprocessing import data_preprocessing, my_dataset
 from models import my_RNN, my_GRU, my_LSTM
 from evaluation import model_evaluation, epoch_evaluation
 from configparser import ConfigParser
+import utils
+import gc
 
 SEED = 119
 torch.random.seed = SEED
@@ -51,6 +54,7 @@ pad_len = config.getint('MODEL_INFO', 'pad_len')
 trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.get('MODEL_INFO', 'validation_size')
+report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
 device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -116,7 +120,36 @@ elif(model_type == 'LSTM'):
                    vocab = dataset.vocab
                 ).to(device) 
 
+optimizer = optim.Adam(model.parameters(), lr = learning_rate)
+loss_fn = nn.BCELoss().to(device)
+gc.collect()
+
+if(trainable_embedding):
+    model.embedding.weight.requires_grad = False
+utils.count_parameters(model = model)
+
+best_model_acc = 0
+
+for t in range(epochs):
+    print(f"Epoch {t+1}\n-------------------------------")
+    utils.train(train_dataLoader, model, loss_fn, optimizer)
+    acc = epoch_evaluation.evaluate(dataloader=validation_dataLoader,
+                                    model=model,
+                                    loss_fn=loss_fn,
+                                    device=device)
+    if(acc > max_acc):
+        max_acc = acc
+        print(f'model saved with the validation accuracy of {acc}')
+        torch.save(model, 'best_acc.model')
+
+print("Done!")
 
 
-
-
+if(report_evaluation):
+    y_pred, y_validation = utils.predict_validation_label(model=model,
+                                                          dataloader=validation_dataLoader,
+                                                          device=device
+                                                          )
+    model_evaluation.report_model_evaluation(y_pred=y_pred,
+                                             y_test=y_pred
+                                             )

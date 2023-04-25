@@ -1,7 +1,8 @@
 import torch
 
 def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    f_num = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(f'number of trainable features: {f_num}')
 
 def train(dataloader, model, loss_fn, optimizer, device):
     size = len(dataloader.dataset)
@@ -26,3 +27,15 @@ def train(dataloader, model, loss_fn, optimizer, device):
             loss, current = loss.item(), (batch + 1) * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
     print(f'train accuracy: {(100*num_correct/len(dataloader.dataset)):>0.01f}')
+
+def predict_validation_label(model, dataloader, device):
+    model.evaluate()
+    Y = []
+    preds = []
+    with torch.no_grad():
+        for x, y in dataloader:
+            Y += y
+            pred = model(x.to(device))
+            preds += torch.round(pred)
+    return preds, Y
+

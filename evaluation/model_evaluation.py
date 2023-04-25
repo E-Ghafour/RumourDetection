@@ -6,7 +6,8 @@ from sklearn.metrics import (classification_report as C_R,
                             confusion_matrix as C_M)
 import seaborn as sns
 
-def report_model_evaluation(y_pred, y_test,
+def report_model_evaluation(y_pred,
+             y,
              classification_report = True,
              accuracy_score = True,
              precision_score = True,
@@ -16,21 +17,21 @@ def report_model_evaluation(y_pred, y_test,
             ):
     
     if(classification_report):
-        print(C_R(y_pred, y_test))
+        print(C_R(y_pred, y))
     
     if(accuracy_score):
-        print('Accuracy\t\t\t: %.4f'%A_S(y_pred, y_test, average='weighted'))
+        print('Accuracy\t\t\t: %.4f'%A_S(y_pred, y, average='weighted'))
 
     if(precision_score):
-        print('Precision\t\t\t: %.4f'%P_S(y_pred, y_test, average='weighted'))
+        print('Precision\t\t\t: %.4f'%P_S(y_pred, y, average='weighted'))
 
     if(recall_score):
-        print('Recall\t\t\t: %.4f'%R_S(y_pred, y_test, average='weighted'))
+        print('Recall\t\t\t: %.4f'%R_S(y_pred, y, average='weighted'))
 
     if(f1_score):
-        print('F1_Score\t\t\t: %.4f'%F1_S(y_pred, y_test, average='weighted'))
+        print('F1_Score\t\t\t: %.4f'%F1_S(y_pred, y, average='weighted'))
 
     if(confusion_matrix):
-        confusion_matrix_report = C_M(y_pred, y_test)
+        confusion_matrix_report = C_M(y_pred, y)
         print('confusion matrix: ')
         sns.heatmap(confusion_matrix_report, annot = True, cmap = 'Blues')
