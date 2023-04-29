@@ -8,6 +8,7 @@ from models import my_RNN, my_GRU, my_LSTM
 from evaluation import model_evaluation, epoch_evaluation
 from configparser import ConfigParser
 import utils
+from utils import save_submit_dataset
 import gc
 
 SEED = 119
@@ -59,7 +60,9 @@ device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
 
 x_train_path = config.get('DATA', 'x_train_path')
+x_test_path = config.get('DATA', 'x_test_path')
 y_train_path = config.get('DATA', 'y_train_path')
+submit_path = config.get('GENERAL', 'submit_model_path')
 
 dataset = my_dataset.RumorDataset(tokenize_data_path=x_train_path,
                                   labels_path=y_train_path,
@@ -142,6 +145,17 @@ for t in range(epochs):
 
 print("Done!")
 
+model = torch.load('best_acc.model')
+gc.collect()
+
+useen_dataset = my_dataset.RumorDataset('/content/drive/MyDrive/RumourDetection/data/X_test.data', [], pad_len, have_label=False)
+
+unseen_dataloader = DataLoader(useen_dataset, 64)
+
+save_submit_dataset(dataloader = unseen_dataloader,
+                    model = model,
+                    device = device,
+                    csv_path = submit_path)
 
 if(report_evaluation):
     y_pred, y_validation = utils.predict_validation_label(model=model,
@@ -151,3 +165,4 @@ if(report_evaluation):
     model_evaluation.report_model_evaluation(y_pred=y_pred,
                                              y=y_validation
                                              )
+

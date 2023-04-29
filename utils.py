@@ -1,5 +1,7 @@
 import torch
 import itertools
+import numpy as np
+import pandas as pd
 
 def count_parameters(model):
     f_num = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -42,3 +44,12 @@ def predict_validation_label(model, dataloader, device):
     y = list(itertools.chain.from_iterable(y))
     return preds, Y
 
+def save_submit_dataset(dataloader, model, device, csv_path):
+    model.eval()
+    with torch.no_grad():
+        preds = []
+        for x in dataloader:
+            preds += model(x.to(device))
+    labels = torch.round(torch.tensor(preds)).tolist()
+    input = np.array([range(20800, 26000), labels]).T
+    pd.DataFrame(input , columns = ['id', 'label'], dtype=int).to_csv(csv_path, index= False)
