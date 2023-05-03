@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import itertools
 import numpy as np
 import pandas as pd
+import argparse
 from models import my_RNN, my_GRU, my_LSTM
 from preprocessing import my_dataset
 import pickle
@@ -70,13 +71,15 @@ def evaluate_best_model(model_path = None, device = 'cuda', validation_dataset_p
     submit_path = config.get('GENERAL', 'submit_model_path')
     report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
     batch_size = config.getint('MODEL_INFO', 'batch_size')
+    embedding_type = config.get('MODEL_INFO', 'embedding_type')
     best_model_path = config.get('GENERAL', 'best_model_path')
+
 
     model_path = best_model_path if model_path == None else model_path
     model = torch.load(model_path)
     model.to(device)
-    
-    useen_dataset = my_dataset.RumorDataset(x_test_path, [], pad_len, have_label=False)
+
+    useen_dataset = my_dataset.RumorDataset(x_test_path, [], pad_len, have_label=False, embedding_type = embedding_type)
 
     unseen_dataloader = DataLoader(useen_dataset, 64)
 
@@ -101,4 +104,14 @@ def evaluate_best_model(model_path = None, device = 'cuda', validation_dataset_p
                                              y=y_validation
                                              )
         
-    save_submit_dataset(unseen_dataloader, model, submit_path)
+    save_submit_dataset(unseen_dataloader, model, device = device, csv_path = submit_path)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    # parser.add_argument('--file_name', type=str)
+    # args = parser.parse_args()
+    # file_name = args.file_name
+    evaluate_best_model()
+
+    

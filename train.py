@@ -81,7 +81,7 @@ train_dataset, validation_dataset = random_split(dataset=dataset,
                                                  lengths=[train_size, validation_size]
                                                  )
 with open('validation_dataset.pkl', 'wb') as ff:
-    pickle.dump(validation_dataset)
+    pickle.dump(validation_dataset, ff)
 
 train_dataLoader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
@@ -151,5 +151,3 @@ for t in range(epochs):
         torch.save(model, best_model_path)
 
 print("Done!")
-
-
