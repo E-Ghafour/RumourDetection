@@ -103,8 +103,6 @@ def evaluate_best_model(model_path = None, device = 'cuda', validation_dataset_p
         model_evaluation.report_model_evaluation(y_pred=y_pred,
                                              y=y_validation
                                              )
-        
-    save_submit_dataset(unseen_dataloader, model, device = device, csv_path = submit_path)
 
 
 if __name__ == '__main__':
