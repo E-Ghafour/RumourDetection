@@ -10,6 +10,7 @@ from configparser import ConfigParser
 import utils
 from utils import save_submit_dataset
 import gc
+import pickle
 
 SEED = 119
 torch.random.seed = SEED
@@ -63,6 +64,7 @@ x_train_path = config.get('DATA', 'x_train_path')
 x_test_path = config.get('DATA', 'x_test_path')
 y_train_path = config.get('DATA', 'y_train_path')
 submit_path = config.get('GENERAL', 'submit_model_path')
+best_model_path = config.get('GENERAL', 'best_model_path')
 
 dataset = my_dataset.RumorDataset(tokenize_data_path=x_train_path,
                                   labels_path=y_train_path,
@@ -78,6 +80,8 @@ train_size = data_size - validation_size
 train_dataset, validation_dataset = random_split(dataset=dataset,
                                                  lengths=[train_size, validation_size]
                                                  )
+with open('validation_dataset.pkl', 'wb') as ff:
+    pickle.dump(validation_dataset)
 
 train_dataLoader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
@@ -128,6 +132,9 @@ gc.collect()
 
 if(not trainable_embedding):
     model.embedding.weight.requires_grad = False
+else:
+    model.embedding.weight.requires_grad = False
+
 utils.count_parameters(model = model)
 
 max_acc = 0
@@ -141,28 +148,8 @@ for t in range(epochs):
     if(acc > max_acc):
         max_acc = acc
         print(f'model saved with the validation accuracy of {acc}')
-        torch.save(model, 'best_acc.model')
+        torch.save(model, best_model_path)
 
 print("Done!")
 
-model = torch.load('best_acc.model')
-gc.collect()
-
-useen_dataset = my_dataset.RumorDataset('/content/drive/MyDrive/RumourDetection/data/X_test.data', [], pad_len, have_label=False)
-
-unseen_dataloader = DataLoader(useen_dataset, 64)
-
-save_submit_dataset(dataloader = unseen_dataloader,
-                    model = model,
-                    device = device,
-                    csv_path = submit_path)
-
-if(report_evaluation):
-    y_pred, y_validation = utils.predict_validation_label(model=model,
-                                                          dataloader=validation_dataLoader,
-                                                          device=device
-                                                          )
-    model_evaluation.report_model_evaluation(y_pred=y_pred,
-                                             y=y_validation
-                                             )
 

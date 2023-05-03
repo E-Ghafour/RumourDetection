@@ -1,11 +1,14 @@
 import torch
+from torch.utils.data import DataLoader
 import itertools
 import numpy as np
 import pandas as pd
+from models import my_RNN, my_GRU, my_LSTM
+from preprocessing import my_dataset
+import pickle
+from evaluation import model_evaluation
+from configparser import ConfigParser
 
-def count_parameters(model):
-    f_num = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f'number of trainable features: {f_num}')
 
 def train(dataloader, model, loss_fn, optimizer, device):
     size = len(dataloader.dataset)
@@ -44,7 +47,7 @@ def predict_validation_label(model, dataloader, device):
     y = list(itertools.chain.from_iterable(y))
     return preds, Y
 
-def save_submit_dataset(dataloader, model, device, csv_path):
+def save_submit_dataset(dataloader, model, device = 'cuda', csv_path = 'submit.csv'):
     model.eval()
     with torch.no_grad():
         preds = []
@@ -53,3 +56,49 @@ def save_submit_dataset(dataloader, model, device, csv_path):
     labels = torch.round(torch.tensor(preds)).tolist()
     input = np.array([range(20800, 26000), labels]).T
     pd.DataFrame(input , columns = ['id', 'label'], dtype=int).to_csv(csv_path, index= False)
+
+def count_parameters(model):
+    trainable, total = sum(p.numel() for p in model.parameters() if p.requires_grad), sum(p.numel() for p in model.parameters())
+    print(f'The model has {trainable:,} trainable parameters')
+    print(f'The model has {total:,} parameters')
+
+def evaluate_best_model(model_path = None, device = 'cuda', validation_dataset_path = 'validation_dataset.pkl'):
+    config = ConfigParser()
+    config.read('/content/RomourDetection/config.ini')
+    x_test_path = config.get('DATA', 'x_test_path')
+    pad_len = config.getint('MODEL_INFO', 'pad_len')
+    submit_path = config.get('GENERAL', 'submit_model_path')
+    report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
+    batch_size = config.getint('MODEL_INFO', 'batch_size')
+    best_model_path = config.get('GENERAL', 'best_model_path')
+
+    model_path = best_model_path if model_path == None else model_path
+    model = torch.load(model_path)
+    model.to(device)
+    
+    useen_dataset = my_dataset.RumorDataset(x_test_path, [], pad_len, have_label=False)
+
+    unseen_dataloader = DataLoader(useen_dataset, 64)
+
+    save_submit_dataset(dataloader = unseen_dataloader,
+                    model = model,
+                    device = device,
+                    csv_path = submit_path)
+
+    with open(validation_dataset_path, 'rb') as ff:
+        validation_dataset = pickle.load(ff)
+
+    validation_dataLoader = DataLoader(dataset=validation_dataset,
+                                   batch_size = batch_size,
+                                   shuffle = True)
+
+    if(report_evaluation):
+        y_pred, y_validation = predict_validation_label(model=model,
+                                                          dataloader=validation_dataLoader,
+                                                          device=device
+                                                          )
+        model_evaluation.report_model_evaluation(y_pred=y_pred,
+                                             y=y_validation
+                                             )
+        
+    save_submit_dataset(unseen_dataloader, model, submit_path)
