@@ -25,6 +25,7 @@ class myGRU(nn.Module):
         x = self.dropout(x)
         out, hidden = self.lstm(x)
         hidden = torch.cat(([h for h in hidden]), dim = 1)
+        hidden = self.dropout(hidden)
         hidden = self.relu(hidden)
         out = self.fc(hidden)
         return self.sigmoid(out)

@@ -125,6 +125,8 @@ elif(model_type == 'LSTM'):
                    dropout = dropout,
                    vocab = dataset.vocab
                 ).to(device) 
+    
+print(model)
 
 optimizer = optim.Adam(model.parameters(), lr = learning_rate)
 loss_fn = nn.BCELoss().to(device)
