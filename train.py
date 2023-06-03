@@ -17,7 +17,9 @@ torch.random.seed = SEED
 np.random.seed(SEED)
 
 config = ConfigParser()
-config.read('/content/RomourDetection/config.ini')
+config.read('config.ini')
+# config.read('/content/RomourDetection/config.ini')
+
 
 skip_preprocessing = config.getboolean('GENERAL', 'skip_preprocessing')
 
@@ -38,7 +40,9 @@ if(not skip_preprocessing):
 
     data_preprocessing.save_data(X, 'x_train.data')
     data_preprocessing.save_data(y, 'y_train.data')
-
+    print('the data is saved...')
+    print('sent the skip_preprocessing to True and run again to have more resources')
+    exit()
 
 #training info
 model_type = config.get('MODEL_INFO', 'type')
@@ -57,8 +61,14 @@ trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.getfloat('MODEL_INFO', 'validation_size')
 report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
-device = ( "cuda" if torch.cuda.is_available() else "cpu")
 
+if(torch.cuda.is_available()):
+    device = 'cuda'
+elif(torch.backends.mps.is_available()):
+    device = 'mps'
+else:
+    device = 'cpu'
+print(f'the device available is {device}......')
 
 x_train_path = config.get('DATA', 'x_train_path')
 x_test_path = config.get('DATA', 'x_test_path')
