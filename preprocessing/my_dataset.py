@@ -40,8 +40,8 @@ class RumorDataset(Dataset):
         
 
 class RumourDatasetBert():
-    def __init__(self, tokenize_data_path, labels_path, max_len, have_label = False):
-        self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    def __init__(self, tokenize_data_path, labels_path, max_len, have_label = True, bert_type = "bert-base-uncased"):
+        self.tokenizer = BertTokenizer.from_pretrained(bert_type)
         self.max_len = max_len
         self.have_label = have_label
         with open(tokenize_data_path, 'rb') as ff:
