@@ -3,16 +3,16 @@ from transformers import BertModel
 import torch
 
 
-class myBertLSTM(nn.Module):
+class myBertGRU(nn.Module):
     
     def __init__(self, input_size, hidden_size, output_size, num_layers, bidirectional, inner_dropout, dropout, bert_type = 'bert-base-uncased'):
-        super(myBertLSTM, self).__init__()
+        super(myBertGRU, self).__init__()
         self.bert = BertModel.from_pretrained(bert_type)
         for param in self.bert.parameters():
             param.requires_grad = False
         self.hidden_size = hidden_size
         self.relu = nn.ReLU()
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first = True, num_layers = num_layers, bidirectional = bidirectional, dropout = inner_dropout )
+        self.gru = nn.GRU(input_size, hidden_size, batch_first = True, num_layers = num_layers, bidirectional = bidirectional, dropout = inner_dropout )
         self.dropout = nn.Dropout(dropout)
         bidirectional = 2 if bidirectional else 1
         self.fc = nn.Linear(num_layers * hidden_size * bidirectional , output_size)
@@ -21,7 +21,7 @@ class myBertLSTM(nn.Module):
     def forward(self, x):
         x = self.bert(input_ids = x[0], attention_mask = x[1])
         x = self.dropout(x[0])
-        out, (hidden, _) = self.lstm(x)
+        out, (hidden, _) = self.gru(x)
         hidden = torch.cat(([h for h in hidden]), dim = 1)
         hidden = self.dropout(hidden)
         hidden = self.relu(hidden)
