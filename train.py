@@ -61,6 +61,7 @@ trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.getfloat('MODEL_INFO', 'validation_size')
 report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
+trainable_last_encoder = config.getboolean('GENERAL', 'trainable_last_encoder')
 
 if(torch.cuda.is_available()):
     device = 'cuda'
@@ -68,7 +69,7 @@ elif(torch.backends.mps.is_available()):
     device = 'mps'
 else:
     device = 'cpu'
-print(f'the device available is {device}......')
+print(f'the available device is {device}......')
 
 x_train_path = config.get('DATA', 'x_train_path')
 x_test_path = config.get('DATA', 'x_test_path')
@@ -80,7 +81,9 @@ accepted_embeddings = ['fasttext', 'glove', 'bert', 'distilbert']
 assert embedding_type in accepted_embeddings, f'your embedding model should be one of thease: {accepted_embeddings}'
 
 bert_type = embedding_type + '-base-uncased'
-if('bert' in embedding_type):
+is_bert = 'bert' in embedding_type
+
+if(is_bert):
     dataset = my_dataset.RumourDatasetBert(tokenize_data_path=x_train_path,
                                            labels_path=y_train_path,
                                            pad_len=pad_len,
@@ -116,7 +119,7 @@ validation_dataLoader = DataLoader(dataset=validation_dataset,
 accepted_models = ['RNN', 'GRU', 'LSTM']
 assert model_type in accepted_models, f'your model_type should be one of thease: {accepted_models}'
 
-if('bert' in embedding_type):
+if(is_bert):
     if(model_type == 'RNN'):
         model = my_Bert_RNN.myBertRNN(input_size = input_size,
                     hidden_size = hidden_size,
@@ -188,10 +191,15 @@ optimizer = optim.Adam(model.parameters(), lr = learning_rate)
 loss_fn = nn.BCELoss().to(device)
 gc.collect()
 
-if(not trainable_embedding):
-    model.embedding.weight.requires_grad = False
-else:
-    model.embedding.weight.requires_grad = False
+if(not is_bert):
+    if(not trainable_embedding):
+        model.embedding.weight.requires_grad = False
+    else:
+        model.embedding.weight.requires_grad = False
+
+if(is_bert and trainable_last_encoder):
+    for param in model.bert.encoder.layer[11].parameters():
+        param.requires_grad = True
 
 utils.count_parameters(model = model)
 

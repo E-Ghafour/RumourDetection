@@ -40,9 +40,9 @@ class RumorDataset(Dataset):
         
 
 class RumourDatasetBert():
-    def __init__(self, tokenize_data_path, labels_path, max_len, have_label = True, bert_type = "bert-base-uncased"):
+    def __init__(self, tokenize_data_path, labels_path, pad_len, have_label = True, bert_type = "bert-base-uncased"):
         self.tokenizer = BertTokenizer.from_pretrained(bert_type)
-        self.max_len = max_len
+        self.max_len = pad_len
         self.have_label = have_label
         with open(tokenize_data_path, 'rb') as ff:
             self.tokenize_data = pickle.load(ff)
