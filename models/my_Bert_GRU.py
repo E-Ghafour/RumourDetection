@@ -21,7 +21,7 @@ class myBertGRU(nn.Module):
     def forward(self, x):
         x = self.bert(input_ids = x[0], attention_mask = x[1])
         x = self.dropout(x[0])
-        out, (hidden, _) = self.gru(x)
+        out, hidden = self.gru(x)
         hidden = torch.cat(([h for h in hidden]), dim = 1)
         hidden = self.dropout(hidden)
         hidden = self.relu(hidden)
