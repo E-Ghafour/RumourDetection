@@ -16,7 +16,11 @@ def train(dataloader, model, loss_fn, optimizer, device):
     model.train()
     num_correct = 0
     for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to(device), y.to(device)
+        if isinstance(X, list):
+            X = (X[0].to(device), X[1].to(device))
+            y = y.to(device)
+        else:
+            X, y = X.to(device), y.to(device)
 
         # Compute prediction error
         pred = model(X)

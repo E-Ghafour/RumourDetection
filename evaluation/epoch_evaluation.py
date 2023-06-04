@@ -7,7 +7,12 @@ def evaluate(dataloader, model, loss_fn, device):
     test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.to(device), y.to(device)
+            if isinstance(X, list):
+                X = (X[0].to(device), X[1].to(device))
+                y = y.to(device)
+            else:
+                X, y = X.to(device), y.to(device)
+            
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (torch.round(pred) == y).type(torch.float).sum().item()
