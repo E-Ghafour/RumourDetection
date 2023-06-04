@@ -60,8 +60,8 @@ pad_len = config.getint('MODEL_INFO', 'pad_len')
 trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.getfloat('MODEL_INFO', 'validation_size')
+trainable_last_encoder = config.getboolean('MODEL_INFO', 'trainable_last_encoder')
 report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
-trainable_last_encoder = config.getboolean('GENERAL', 'trainable_last_encoder')
 
 if(torch.cuda.is_available()):
     device = 'cuda'
@@ -69,7 +69,7 @@ elif(torch.backends.mps.is_available()):
     device = 'mps'
 else:
     device = 'cpu'
-print(f'the available device is {device}......')
+print(f'the available device is {device}')
 
 x_train_path = config.get('DATA', 'x_train_path')
 x_test_path = config.get('DATA', 'x_test_path')
