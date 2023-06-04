@@ -14,7 +14,7 @@ class myGRU(nn.Module):
         self.relu = nn.ReLU()
         self.embedding = nn.Embedding.from_pretrained(vocab.vectors)
         self.embedding.weight.requires_grad = False
-        self.lstm = nn.GRU(input_size, hidden_size, batch_first = True, num_layers = num_layers, bidirectional = bidirectional, dropout = inner_dropout )
+        self.gru = nn.GRU(input_size, hidden_size, batch_first = True, num_layers = num_layers, bidirectional = bidirectional, dropout = inner_dropout )
         self.dropout = nn.Dropout(dropout)
         bidirectional = 2 if bidirectional else 1
         self.fc = nn.Linear(num_layers * hidden_size * bidirectional , output_size)
@@ -23,7 +23,7 @@ class myGRU(nn.Module):
     def forward(self, x):
         x = self.embedding(x)
         x = self.dropout(x)
-        out, hidden = self.lstm(x)
+        out, hidden = self.gru(x)
         hidden = torch.cat(([h for h in hidden]), dim = 1)
         hidden = self.dropout(hidden)
         hidden = self.relu(hidden)
