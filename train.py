@@ -4,7 +4,7 @@ from torch import optim
 from torch.utils.data import DataLoader, random_split
 import numpy as np
 from preprocessing import data_preprocessing, my_dataset
-from models import my_RNN, my_GRU, my_LSTM
+from models import my_RNN, my_GRU, my_LSTM, my_Bert_LSTM, my_Bert_GRU, my_Bert_RNN
 from evaluation import model_evaluation, epoch_evaluation
 from configparser import ConfigParser
 import utils
@@ -76,12 +76,24 @@ y_train_path = config.get('DATA', 'y_train_path')
 submit_path = config.get('GENERAL', 'submit_model_path')
 best_model_path = config.get('GENERAL', 'best_model_path')
 
-dataset = my_dataset.RumorDataset(tokenize_data_path=x_train_path,
-                                  labels_path=y_train_path,
-                                  pad_len=pad_len,
-                                  have_label=True,
-                                  embedding_type=embedding_type,
-                                  )
+accepted_embeddings = ['fasttext', 'glove', 'bert', 'distilbert']
+assert embedding_type in accepted_embeddings, f'your embedding model should be one of thease: {accepted_embeddings}'
+
+bert_type = embedding_type + '-base-uncased'
+if('bert' in embedding_type):
+    dataset = my_dataset.RumourDatasetBert(tokenize_data_path=x_train_path,
+                                           labels_path=y_train_path,
+                                           pad_len=pad_len,
+                                           have_label=True,
+                                           bert_type=bert_type
+                                           )
+else:
+    dataset = my_dataset.RumorDataset(tokenize_data_path=x_train_path,
+                                    labels_path=y_train_path,
+                                    pad_len=pad_len,
+                                    have_label=True,
+                                    embedding_type=embedding_type,
+                                    )
 
 data_size = len(dataset)
 validation_size = int(validation_size * data_size)
@@ -90,6 +102,7 @@ train_size = data_size - validation_size
 train_dataset, validation_dataset = random_split(dataset=dataset,
                                                  lengths=[train_size, validation_size]
                                                  )
+
 with open('validation_dataset.pkl', 'wb') as ff:
     pickle.dump(validation_dataset, ff)
 
@@ -101,41 +114,74 @@ validation_dataLoader = DataLoader(dataset=validation_dataset,
                                    shuffle = True)
 
 accepted_models = ['RNN', 'GRU', 'LSTM']
-accepted_embeddings = ['fasttext', 'glove']
-assert embedding_type in accepted_embeddings, f'your embedding model should be one of thease: {accepted_embeddings}'
 assert model_type in accepted_models, f'your model_type should be one of thease: {accepted_models}'
 
-if(model_type == 'RNN'):
-    model = my_RNN.myRNN(input_size = input_size,
-                   hidden_size = hidden_size,
-                   output_size = output_size,
-                   num_layers = n_layer,
-                   bidirectional = bidirectional,
-                   inner_dropout = inner_dropout,
-                   dropout = dropout,
-                   vocab = dataset.vocab,
-                ).to(device)
-elif(model_type == 'GRU'):
-    model = my_GRU.myGRU(input_size = input_size,
-                   hidden_size = hidden_size,
-                   output_size = output_size,
-                   num_layers = n_layer,
-                   bidirectional = bidirectional,
-                   inner_dropout = inner_dropout,
-                   dropout = dropout,
-                   vocab = dataset.vocab
-                ).to(device) 
-elif(model_type == 'LSTM'):
-    model = my_LSTM.myLSTM(input_size = input_size,
-                   hidden_size = hidden_size,
-                   output_size = output_size,
-                   num_layers = n_layer,
-                   bidirectional = bidirectional,
-                   inner_dropout = inner_dropout,
-                   dropout = dropout,
-                   vocab = dataset.vocab
-                ).to(device) 
-    
+if('bert' in embedding_type):
+    if(model_type == 'RNN'):
+        model = my_Bert_RNN.myBertRNN(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    bert_type=bert_type
+                    ).to(device)
+        
+    elif(model_type == 'GRU'):
+        model = my_Bert_GRU.myBertGRU(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    bert_type= bert_type
+                    ).to(device) 
+        
+    elif(model_type == 'LSTM'):
+        model = my_Bert_LSTM.myBertLSTM(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    bert_type= bert_type
+                    ).to(device) 
+        
+else:
+    if(model_type == 'RNN'):
+        model = my_RNN.myRNN(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    vocab = dataset.vocab,
+                    ).to(device)
+    elif(model_type == 'GRU'):
+        model = my_GRU.myGRU(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    vocab = dataset.vocab
+                    ).to(device) 
+    elif(model_type == 'LSTM'):
+        model = my_LSTM.myLSTM(input_size = input_size,
+                    hidden_size = hidden_size,
+                    output_size = output_size,
+                    num_layers = n_layer,
+                    bidirectional = bidirectional,
+                    inner_dropout = inner_dropout,
+                    dropout = dropout,
+                    vocab = dataset.vocab
+                    ).to(device) 
+        
 print(model)
 
 optimizer = optim.Adam(model.parameters(), lr = learning_rate)

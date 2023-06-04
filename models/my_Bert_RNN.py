@@ -1,20 +1,17 @@
-import torch
 import torch.nn as nn
-from torchtext.vocab import GloVe, FastText
+from transformers import BertModel
+import torch
 
-class myGRU(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, num_layers, bidirectional, inner_dropout, dropout, vocab = None, word2vec = 'fasttext'):
-        super(myGRU, self).__init__()
-        if(vocab == None):
-            if(word2vec == 'fasttext'):
-                vocab = FastText(language='en') if vocab == None else vocab
-            else:
-                vocab = GloVe(name = '6B', dim = 100)
-        vocab = FastText(language='en') if vocab == None else vocab
+
+class myBertRNN(nn.Module):
+    
+    def __init__(self, input_size, hidden_size, output_size, num_layers, bidirectional, inner_dropout, dropout, bert_type = 'bert-base-uncased'):
+        super(myBertRNN, self).__init__()
+        self.bert = BertModel.from_pretrained(bert_type)
+        for param in self.bert.parameters():
+            param.requires_grad = False
         self.hidden_size = hidden_size
         self.relu = nn.ReLU()
-        self.embedding = nn.Embedding.from_pretrained(vocab.vectors)
-        self.embedding.weight.requires_grad = False
         self.rnn = nn.RNN(input_size, hidden_size, batch_first = True, num_layers = num_layers, bidirectional = bidirectional, dropout = inner_dropout )
         self.dropout = nn.Dropout(dropout)
         bidirectional = 2 if bidirectional else 1
@@ -22,8 +19,8 @@ class myGRU(nn.Module):
         self.sigmoid = torch.nn.Sigmoid()
 
     def forward(self, x):
-        x = self.embedding(x)
-        x = self.dropout(x)
+        x = self.bert(input_ids = x[0], attention_mask = x[1])
+        x = self.dropout(x[0])
         out, hidden = self.rnn(x)
         hidden = torch.cat(([h for h in hidden]), dim = 1)
         hidden = self.dropout(hidden)
