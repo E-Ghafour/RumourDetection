@@ -198,7 +198,7 @@ if(not is_bert):
         model.embedding.weight.requires_grad = False
 
 if(is_bert and trainable_last_encoder):
-    for param in model.bert.encoder.layer[11].parameters():
+    for param in model.bert.encoder.layer[-1].parameters():
         param.requires_grad = True
 
 utils.count_parameters(model = model)
