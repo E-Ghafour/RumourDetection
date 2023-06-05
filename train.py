@@ -61,6 +61,7 @@ trainable_embedding = config.getboolean('MODEL_INFO', 'trainable_embedding')
 embedding_type = config.get('MODEL_INFO', 'embedding_type')
 validation_size = config.getfloat('MODEL_INFO', 'validation_size')
 trainable_last_encoder = config.getboolean('MODEL_INFO', 'trainable_last_encoder')
+bert_type = config.get('MODEL_INFO', 'bert_type')
 report_evaluation = config.getboolean('GENERAL', 'report_evaluation')
 
 if(torch.cuda.is_available()):
@@ -80,7 +81,6 @@ best_model_path = config.get('GENERAL', 'best_model_path')
 accepted_embeddings = ['fasttext', 'glove', 'bert', 'distilbert']
 assert embedding_type in accepted_embeddings, f'your embedding model should be one of thease: {accepted_embeddings}'
 
-bert_type = embedding_type + '-base-uncased'
 is_bert = 'bert' in embedding_type
 
 if(is_bert):
