@@ -17,8 +17,8 @@ torch.random.seed = SEED
 np.random.seed(SEED)
 
 config = ConfigParser()
-config.read('config.ini')
-# config.read('/content/RomourDetection/config.ini')
+# config.read('config.ini')
+config.read('/content/RomourDetection/config.ini')
 
 
 skip_preprocessing = config.getboolean('GENERAL', 'skip_preprocessing')
