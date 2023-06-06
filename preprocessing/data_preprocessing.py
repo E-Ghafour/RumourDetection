@@ -12,6 +12,9 @@ tqdm.pandas()
 # nltk.download('punkt')
 
 def preprocess(file_path,
+                title_col_name = 'title',
+                text_col_name = 'text',
+                label_col_name = 'label',
                 fillna = 'ukw',
                 remove_punc = True,
                 lower_case = True,
@@ -22,8 +25,8 @@ def preprocess(file_path,
     print('reading csv...')
     df = pd.read_csv(file_path)
     df.fillna(fillna, inplace=True)
-    X = df['title'] + ' eoft ' + df['text']
-    y = df['label']
+    X = df[title_col_name] + ' eoft ' + df[text_col_name]
+    y = df[label_col_name]
 
     print('remove punc...')
     X = X.progress_apply(lambda x: re.sub('[^a-zA-Z]', ' ', x))  if remove_punc else X
@@ -50,11 +53,20 @@ def save_data(data, path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file_name', type=str)
+    parser.add_argument('--file_path', type=str)
+    parser.add_argument('--title_col', type=str)
+    parser.add_argument('--text_col', type=str)
+    parser.add_argument('--label_col', type=str)
     args = parser.parse_args()
-    file_name = args.file_name
+    file_name = args.file_path
+    title_col = args.title_col
+    text_col = args.text_col
+    label_col = args.label_col
 
-    X, y = preprocess(file_name)
+    X, y = preprocess(file_name, 
+                      title_col_name=title_col,
+                      text_col_name=text_col,
+                      label_col_name=label_col)
 
     save_data(X)
 

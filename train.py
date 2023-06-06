@@ -25,6 +25,9 @@ skip_preprocessing = config.getboolean('GENERAL', 'skip_preprocessing')
 
 if(not skip_preprocessing):
     #preprocess the data and save it to the file
+    title_col_name = config.get('DATA', 'title_col_name')
+    text_col_name = config.get('DATA', 'text_col_name')
+    label_col_name = config.get('DATA', 'label_col_name')
     fake_news_train_path = config.get('DATA', 'fake_news_train_path')
     remove_punc = config.getboolean('PREPROCESSING', 'remove_punc')
     lower_case = config.getboolean('PREPROCESSING', 'lower_case')
@@ -32,14 +35,17 @@ if(not skip_preprocessing):
     steam = config.getboolean('PREPROCESSING', 'steam')
 
     X, y = data_preprocessing.preprocess(fake_news_train_path,
-                                        fillna='unk',
+                                        title_col_name=title_col_name,
+                                        text_col_name=text_col_name,
+                                        label_col_name=label_col_name,
+                                        fillna='<unk>',
                                         remove_punc=remove_punc,
                                         lower_case=lower_case,
                                         remove_stopwords=remove_stopwords,
                                         steam=steam)
 
-    data_preprocessing.save_data(X, 'x_train.data')
-    data_preprocessing.save_data(y, 'y_train.data')
+    data_preprocessing.save_data(X, 'x_train2.data')
+    data_preprocessing.save_data(y, 'y_train2.data')
     print('the data is saved...')
     print('sent the skip_preprocessing to True and run again to have more resources')
     exit()
