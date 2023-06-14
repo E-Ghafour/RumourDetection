@@ -209,7 +209,7 @@ if(is_bert and trainable_last_encoder):
 
 utils.count_parameters(model = model)
 
-max_acc = 0
+max_acc = 0.9
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     utils.train(train_dataLoader, model, loss_fn, optimizer, device)

@@ -6,3 +6,9 @@ fake_news/
 preprocessing/__pycache__
 evaluation/__pycache__
 models/__pycache__
+Apple_config.ini
+haminjory.ipynb
+*.pkl
+*.data
+.vector*
+__pycach*
