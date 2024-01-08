@@ -1,2 +1,2 @@
 # RomourDetection
-Different approach for training a Rumour detection model
+Different approaches for training a Rumour detection model
