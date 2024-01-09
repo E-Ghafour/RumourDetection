@@ -9,7 +9,7 @@ Welcome to the Rumour Detection repository! This project focuses on implementing
 
 - **Configurable Interface:** An easy-to-use interface allows users to tune different aspects of the training process using a `config.ini` file. This empowers users to experiment with various hyperparameters and configurations effortlessly.
 
-- **Google Sheet Reporting:** Some of the results of model training experiments are reported to this [**Google Sheet**](https://docs.google.com/spreadsheets/d/1HSW92__FzxiRzxJaF7wNpTlthKCVXSMhCuj72LsNzPo/edit?usp=sharing), providing a clear overview of model performance under different settings. All of the reported models were trained just by editing `config.ini` file.
+- **Google Sheet Reporting:** Some of the results of model training experiments that are accompanied by a clear overview of model performance under different settings, are reported to this [**Google Sheet**](https://docs.google.com/spreadsheets/d/1HSW92__FzxiRzxJaF7wNpTlthKCVXSMhCuj72LsNzPo/edit?usp=sharing). Needless to say, all of the reported models were trained just by editing `config.ini` file.
 
 
 - **Downloadable Models:** Some of the Pre-trained models, resulting from experiments with various hyperparameters, are available for download in the provided google sheet. These models can be directly applied or serve as a starting point for further fine-tuning.
