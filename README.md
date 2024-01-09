@@ -64,4 +64,8 @@ Clone the repository to your local machine or Google colab:
     
 ```bash
 !python train.py
-```        
+```
+
+## Contribution
+Contributions are welcome! Feel free to open issues or submit pull requests for improvements, bug fixes, or new features. Help to broden the results of the provided google sheet by inserting the result of your trained model in this [google sheet](https://docs.google.com/spreadsheets/d/1HSW92__FzxiRzxJaF7wNpTlthKCVXSMhCuj72LsNzPo/edit?usp=sharing).
+
