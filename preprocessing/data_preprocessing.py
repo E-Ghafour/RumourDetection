@@ -8,8 +8,9 @@ from tqdm import tqdm
 import pickle 
 tqdm.pandas()
 
-# nltk.download('stopwords')
-# nltk.download('punkt')
+## comment this section if you have already download it...
+nltk.download('stopwords')
+nltk.download('punkt')
 
 def preprocess(file_path,
                 title_col_name = 'title',
