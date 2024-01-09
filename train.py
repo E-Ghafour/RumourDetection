@@ -210,6 +210,7 @@ if(is_bert and trainable_last_encoder):
 utils.count_parameters(model = model)
 
 max_acc = 0.9
+best_acc = 0
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     utils.train(train_dataLoader, model, loss_fn, optimizer, device)
@@ -217,9 +218,11 @@ for t in range(epochs):
                                     model=model,
                                     loss_fn=loss_fn,
                                     device=device)
+    best_acc = max(acc, best_acc)
     if(acc > max_acc):
         max_acc = acc
         print(f'model saved with the validation accuracy of {acc}')
         torch.save(model, best_model_path)
+print(f'the best test acc is: {best_acc}')
 
 print("Done!")
