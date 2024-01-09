@@ -1,11 +1,11 @@
-# Rumour Detection Classification with PyTorch
+# Rumour Detection with PyTorch
 
-Welcome to the Rumour Detection Classification repository! This project focuses on implementing and exploring various configurations for rumour detection using PyTorch. The repository not only includes the PyTorch implementation of the classification model but also features an intuitive interface for easily tuning, testing different training configurations, and adapting preprocessing steps.
+Welcome to the Rumour Detection repository! This project focuses on implementing and exploring various configurations for rumour detection using PyTorch. The repository not only includes the PyTorch implementation of the classification models but also features an intuitive interface for easily tuning, testing different training configurations, and adapting preprocessing steps.
 
 
 ## Key Features
 
-- **PyTorch Implementation:** The core of this project is a robust rumour detection classification model built with PyTorch, offering a powerful and flexible framework for training and evaluation.
+- **PyTorch Implementation:** The core of this project is robust rumour detection models built with PyTorch, offering a powerful and flexible framework for training and evaluation.
 
 - **Configurable Interface:** An easy-to-use interface allows users to tune different aspects of the training process using a `config.ini` file. This empowers users to experiment with various hyperparameters and configurations effortlessly.
 
